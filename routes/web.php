@@ -11,7 +11,7 @@
 |
 
 Link tham khảo: Building a API with Lumen - A PHP framework - Youtube
-Github Project: 
+Github Project: https://github.com/binhpqe/fpt-training-lumen
 */
 
 $app->get('/', function () use ($app) {
@@ -20,20 +20,19 @@ $app->get('/', function () use ($app) {
 
 
 
-$app->get('/item-list', function () use ($app) {
-    $results = app('db')->select("SELECT * FROM products");
-    return $results;
-});
+$app->get('/item-list', 'ProductsController@getProducts' );
 
-$app->get('/test', 'ProductsController@getProducts' );
+$app->get('/item/{id}', 'ProductsController@getProduct' );
 
 /*Theo flow của FPT API dùng POST*/
 
 $app->post('/create-item', 'ProductsController@createProduct' );
 
+
 $app->post('/update-item/{id}', 'ProductsController@updateProduct' );
 
 
-$app->post('/delete-item', function () use ($app) {
-    return 'O day se update current record';
-});
+$app->post('/delete-item/{id}', 'ProductsController@deleteProduct' );
+
+
+$app->post('/force-delete-item/{id}', 'ProductsController@forceDeleteProduct' );

@@ -25,9 +25,14 @@ class ProductsController extends Controller
     
     public function getProducts()
     {
-        //return response()->json(    Products::all() );
-        //$exec = Products::table('products') -> get();
         $exec = Products::where('is_deleted',0) 
+                            -> get();
+        return $exec;
+    }
+    
+    public function getProduct($id)
+    {
+        $exec = Products::where('product_id',$id) 
                             -> get();
         return $exec;
     }
@@ -53,14 +58,49 @@ class ProductsController extends Controller
     
     public function updateProduct($id, Request $request)
     {
-        $exec = Products::find($id);
+        /*Valid Check*/
+        $this->validate($request, [
+            'product_name_vi'           => 'max:50',
+            'product_name_en'           => 'max:50',
+            'icon_url'                  => 'max:255',
+            'data_action_staging'       => 'max:255',
+            'data_action_production'    => 'max:255',
+            'action_type'               => '',
+            'data'                      => '',
+            'content'                   => 'max:255',
+            'date_modified'             => 'date_format:Y-m-d H:i:s',
+            'new_begin_day'             => 'date|before:new_end_day',
+            'new_end_day'               => 'date|after:new_begin_date',
+            'is_deleted'                => 'boolean',
+            'is_new'                    => 'boolean'
+        ]);
         
-        $exec = DB::table('products')
-                                ->where('product_id',$id)
-                                ->update(   ['is_deleted' => 1, 'is_new' => 1]  );
-        //$results = DB::select("SELECT * FROM users");
-        //$exec -> update( $request->all() );
-        return respone() -> json($exec,200);
-        //dd($exec);
+        
+        $Products = new Products;
+                
+        $exec = Products::where('product_id',$id)
+                            ->update($request -> all() );
+                            
+        return response() -> json("Da cap nhat du lieu",200);
+    }
+    
+    public function deleteProduct($id)
+    {
+        
+        /* -> Set is_new = 1 -> current record*/
+        $exec = Products::where('product_id',$id)
+                            ->update(['is_deleted' => 1] );
+                            
+        return response() -> json("Da cap nhat delete",200);
+    }
+    
+    
+    public function forceDeleteProduct($id)
+    {
+        
+        /* -> Xoá luôn record*/
+        $exec = Products::where('product_id',$id)
+                            ->delete();
+        return response() -> json("Da delete khoi db",200);
     }
 }
