@@ -12,29 +12,28 @@ class ProductsController extends Controller
      *
      * @return void
      */
+    
+    private  $Products ;
+     
     public function __construct()
     {
-        //
+       $this->Products = new Products;
     }
 
     /*
         Date Create: 2021-12-01 11:50:00
-        Date Update: *
+        Date Update: 2021-12-01 17:00:00
         Dev: Thien Binh
     */ 
     
     public function getProducts()
-    {
-        $exec = Products::where('is_deleted',0) 
-                            -> get();
-        return $exec;
+    {        
+        return $this->Products->productsViewFullItem();
     }
     
     public function getProduct($id)
     {
-        $exec = Products::where('product_id',$id) 
-                            -> get();
-        return $exec;
+        return $this->Products->productsViewChoosenItem($id);
     }
     
     public function createProduct(Request $request)
@@ -51,9 +50,7 @@ class ProductsController extends Controller
             'is_new'                    => 'required|boolean'
         ]);
         
-        /*Insert to DB*/
-        $exec = Products::create($request -> all() );
-        return response() -> json ($exec, 201);
+        return $this->Products-> productInsertItem($request);
     }
     
     public function updateProduct($id, Request $request)
@@ -75,32 +72,18 @@ class ProductsController extends Controller
             'is_new'                    => 'boolean'
         ]);
         
-        
-        $Products = new Products;
-                
-        $exec = Products::where('product_id',$id)
-                            ->update($request -> all() );
-                            
-        return response() -> json("Da cap nhat du lieu",200);
+        return $this->Products-> productsUpdateItem($id,$request);
     }
     
     public function deleteProduct($id)
     {
-        
-        /* -> Set is_new = 1 -> current record*/
-        $exec = Products::where('product_id',$id)
-                            ->update(['is_deleted' => 1] );
-                            
-        return response() -> json("Da cap nhat delete",200);
+        return $this->Products-> productsUpdateDeletedItem($id);
     }
     
     
     public function forceDeleteProduct($id)
     {
         
-        /* -> Xoá luôn record*/
-        $exec = Products::where('product_id',$id)
-                            ->delete();
-        return response() -> json("Da delete khoi db",200);
+        return $this->Products-> productsDeleteItem($id);
     }
 }
